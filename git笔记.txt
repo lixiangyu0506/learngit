@@ -1,3 +1,10 @@
+----总体说明----
+1. .git目录下文件不能做任何改动！！！！
+2. 对版本库的操作只能在.git目录的父目录中进行，称其为工作目录（经测试，在其子目录中也可操作，但需注意相对路径）
+3. 工作目录外的文件不被版本库管辖，工作目录中子目录的变化能被版本库管辖
+4. 切换文件夹即切换版本库，不同文件夹中所有的操作都只针对此版本库（例如cd入不同文件夹，其远程关联库会自动改变）
+5. 远程仓库名称和本地工作目录的名称可以不同
+
 ----安装配置----
 $ git config --global user.name "Your Name"
 $ git config --global user.email "email@example.com"
@@ -62,7 +69,9 @@ git reset --hard HEAD^  (版本回退)
 
 ----远程仓库 github----
 注册github
-要关联一个远程库，使用命令git remote add origin git@server-name:path/repo-name.git；
-关联后，使用命令git push -u origin master第一次推送master分支的所有内容；
-此后，每次本地提交后，只要有必要，就可以使用命令git push origin master推送最新修改；
-注：首次登陆，http协议要求输入注册邮箱账号密码，ssh协议输入yes
+git remote add origin git@github.com:lixiangyu0506/learngit.git   	要关联一个远程库
+git push -u origin master                                         	关联后，第一次推送master分支的所有内容；
+git push origin master												此后，每次本地提交后，只要有必要，就可以使用此命令推送master分支最新修改
+git remote rm origin												取消远程库关联（取消后可重复上述步骤关联）
+git remote -v														查看远程权限
+注：1.首次登陆，http协议要求输入注册邮箱和密码，ssh协议输入yes
