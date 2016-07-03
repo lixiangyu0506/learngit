@@ -89,4 +89,5 @@ git branch -d <name>		删除分支
 git checkout <name>			切换分支
 git checkout -b <name>		创建+切换分支
 git merge <name>			合并某分支到当前分支
-
+注：1.在哪儿commit，最新更改就保存在哪个分支，commit前所有分支可见最新更改，commit后只有此分支能看见最新更改
+	2.如果checkout时存在冲突，切换失败并给出相关提示
