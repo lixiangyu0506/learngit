@@ -91,3 +91,20 @@ git checkout -b <name>		创建+切换分支
 git merge <name>			合并某分支到当前分支
 注：1.在哪儿commit，最新更改就保存在哪个分支，commit前所有分支可见最新更改，commit后只有此分支能看见最新更改
 	2.如果checkout时存在冲突，切换失败并给出相关提示
+
+----分支冲突----
+1.创建分支feature，修改文件，add和commit
+2.切换至master分支，修改同一文件，add和commit
+3.使用merge合并，会提示合并失败
+4.打开合并失败的文件，内容会有如下改变（Git用<<<<<<<，=======，>>>>>>>标记出不同分支的内容）
+5.手动修改文件，并去掉标记，重新add和commit
+
+<<<<<<< HEAD
+Creating a new branch is quick & simple.
+=======
+Creating a new branch is quick AND simple.
+>>>>>>> feature
+
+git log --graph --pretty=oneline --abbrev-commit		查看分支合并图
+
+注：合并过程中，分支显示 (当前分支|MERGING)
