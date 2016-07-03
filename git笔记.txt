@@ -36,7 +36,8 @@ git管理的不是文件，而是修改，每次commit只会提交最近一次gi
 第一次修改 -> git add -> 第二次修改 -> git add -> git commit
 
 ----撤销修改----
-撤销最近一次add至暂存区，但还未commit的内容（清空缓存区，不修改工作区和分支） git reset HEAD .
+git checkout -- myfile.txt		将工作区文件恢复到最近一次git commit或git add时的状态
+git reset HEAD .				撤销最近一次add至暂存区，但还未commit的内容（清空缓存区，不修改工作区和分支）
 
 对于文件 myfile.txt
 ① 修改后 未add（添加到暂存区） 需要撤销修改时：
@@ -80,4 +81,12 @@ git remote -v														查看远程权限
 ----克隆远程仓库----
 git clone git@github.com:lixiangyu0506/learngit.git		克隆一个远程仓库
 
+----创建与合并分支----
+HEAD指向当前分支，当前分支指向最新提交
+git branch					查看分支，并在当前分支前标"*"
+git branch <name>			创建分支
+git branch -d <name>		删除分支
+git checkout <name>			切换分支
+git checkout -b <name>		创建+切换分支
+git merge <name>			合并某分支到当前分支
 
