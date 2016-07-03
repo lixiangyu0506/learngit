@@ -68,7 +68,7 @@ git checkout -- test.txt
 将工作区文件删除，并add和commit后，试图恢复
 git reset --hard HEAD^  (版本回退)
 
-----关联远程仓库 github----
+----关联远程仓库 github 本地仓库更新至远端----
 注册github
 git remote add origin git@github.com:lixiangyu0506/learngit.git   	要关联一个远程库
 git push -u origin master                                         	关联后，第一次推送master分支的所有内容；
@@ -78,8 +78,17 @@ git remote -v														查看远程权限
 注：1.首次登陆，ssh协议输入yes
 	2.http协议，git remote add origin https://github.com/lixiangyu0506/learngit.git，但每次需要输入注册用户名和密码。
 	
-----克隆远程仓库----
+----克隆远程仓库 远程仓库内容更新至本地----
 git clone git@github.com:lixiangyu0506/learngit.git		克隆一个远程仓库
+
+git fetch origin master							从远程的origin仓库的master主分支更新最新的版本到origin/master分支上
+git log -p master..origin/master				比较本地的master分支和origin/master分支的差别
+git merge origin/master							git merge origin/master
+
+git pull origin master							相当于git fetch 和 git merge，即更新远程仓库的代码到本地仓库，然后将内容合并到当前分支
+
+注：1.建议使用fetch，pull操作可能有危险
+	2.merge操作见下面分支合并
 
 ----创建与合并分支----
 HEAD指向当前分支，当前分支指向最新提交
@@ -108,3 +117,26 @@ Creating a new branch is quick AND simple.
 git log --graph --pretty=oneline --abbrev-commit		查看分支合并图
 
 注：合并过程中，分支显示 (当前分支|MERGING)
+
+----分支管理策略----
+合并分支时，如果可能，Git会用Fast forward模式，但这种模式下，删除分支后，会丢掉分支信息。
+git merge -ff dev									快速合并，--graph能看不出合并操作（默认）
+git merge --no-ff -m "merge with no-ff" dev			禁用快速合并模式，为合并操作添加commit，--graph能看出合并操作
+
+分支策略
+在实际开发中，我们应该按照几个基本原则进行分支管理：
+首先，master分支应该是非常稳定的，也就是仅用来发布新版本，平时不能在上面干活；
+那在哪干活呢？干活都在dev分支上，也就是说，dev分支是不稳定的，到某个时候，比如1.0版本发布时，再把dev分支合并到master上，在master分支发布1.0版本；
+你和你的小伙伴们每个人都在dev分支上干活，每个人都有自己的分支（devLxy,devJxj等），时不时地往dev分支上合并就可以了。
+
+----临时分支（贮藏功能）----
+有两个分支，master和dev，dev编辑到一半，并未成功，所以不能提交。
+但此时master有一个bug需要马上去修复，但因为dev无法提交，所以用git stash保存现场。
+转去master，创建新分支修复bug，然后转回master并merge。
+转到dev中，用指令dit stash pop恢复现场。然后指令git merge master，将master中修复的bug同步到dev的分支中。
+
+git stash					将当前工作现场“储藏”起来，此时git status操作为空
+git stash list				查看贮藏的工作现场列表
+git stash pop				恢复最近一次工作现场，并从list列表中删除
+git stash apply stash@{0}   根据list列表恢复工作现场，但不从list列表中删除
+git stash drop stash@{0}	删除list列表中的工作现场
