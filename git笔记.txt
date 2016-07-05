@@ -178,3 +178,13 @@ git ls-remote --heads origin		查看远程库有哪些分支
 3. git branch --set-upstream-to=origin/dev dev  本地分支关联远程分支
 4. git pull 合并，类似分支冲突合并，修改后add并commit
 5. git push 重新推送成功
+
+--------------------分支回退到某一指定版本--------------------
+有时我们想查看某一版本的内容，但又不想在当前分支进行回退，以免发生危险
+可以建立新的分支，在该分支回退
+git checkout -b back1
+git reset --hard 版本号
+
+查看完毕后，可切换回工作分支，并删除回退专用分支
+git checkout 工作分支
+git branch -d back1
