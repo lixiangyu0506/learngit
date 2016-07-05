@@ -1,47 +1,54 @@
-----总体说明----
+--------------------总体说明--------------------
 1. .git目录下文件不能做任何改动！！！！
 2. 对版本库的操作只能在.git目录的父目录中进行，称其为工作目录（经测试，在其子目录中也可操作，但需注意相对路径）
 3. 工作目录外的文件不被版本库管辖，工作目录中子目录的变化能被版本库管辖
 4. 切换文件夹即切换版本库，不同文件夹中所有的操作都只针对此版本库（例如cd入不同文件夹，其远程关联库会自动改变）
 5. 远程仓库名称和本地工作目录的名称可以不同
 
-----安装配置----
+--------------------安装配置--------------------
 $ git config --global user.name "Your Name"
 $ git config --global user.email "email@example.com"
 
-----创建版本库----
+--------------------创建版本库--------------------
 初始化一个Git仓库，使用git init命令。
 添加文件到Git仓库，分两步：
-第一步，使用命令git add <file>，注意，可反复多次使用，添加多个文件；
-第二步，使用命令git commit -m "注释"，完成。
-注：如果想add整个文件夹，使用命令git add .
-	文件名和注释可为中文，建议使用UTF-8编码
+git add <file>			可反复多次使用，添加多个文件，文件可中文，建议UTF-8编码
+git add . 				同步整个文件夹（包括添加、更改、删除）（与 git add <file> 二选一）
+git commit -m "注释"	注释可中文
 
-----查看状态及更改----
-要随时掌握工作区的状态，使用git status命令。
-如果git status告诉你有文件被修改过，用git diff可以查看修改内容。
+--------------------查看状态及更改--------------------
+git status				掌握工作区的状态,告诉你有文件被修改过，用git diff可以查看修改内容（使用方法下面讲）
 
-----版本回退----
-HEAD指向的版本就是当前版本，因此，Git允许我们在版本的历史之间穿梭，使用命令git reset --hard commit_id。
-穿梭前，用git log --pretty=oneline可以查看提交历史，以便确定要回退到哪个版本。
-要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。
-
-----工作区 版本库----
+--------------------工作区 版本库--------------------
 正常操作区域为工作区，.git目录下为版本库，版本库中有暂存区（stage）和分支（branch），创建版本库时会自动创建第一个分支（master）
 git add把文件添加进去，实际上就是把文件修改添加到暂存区（stage）
 git commit提交更改，实际上就是把暂存区的所有内容提交到当前分支
 
-----管理修改----
+--------------------working tree, index file, commit--------------------
+working tree：就是你所工作在的目录，每当你在代码中进行了修改，working tree的状态就改变了。
+index file：是索引文件，它是连接working tree和commit的桥梁，每当我们使用git add命令来登记后，index file的内容就改变了，此时index file就和working tree同步了。
+commit：是最后的阶段，只有commit了，我们的代码才真正进入了git仓库。我们使用git commit就是将index file里的内容提交到commit中。
+
+git diff					查看working tree与index file的差别
+git diff --cached			查看index file与commit的差别
+git diff 版本号				查看working tree和commit的差别（最近的一次版本号，可使用HEAD）
+git diff 版本号1 版本号2	两个版本间差异，将版本号1转变成版本号2需要做什么
+
+--------------------版本回退--------------------
+git reset --hard 版本号			工作区回退到指定版本号
+git log --pretty=oneline		穿梭前，查看提交历史，以便确定要回退到哪个版本。
+git reflog						重返未来，查看命令历史，以便确定要回到未来的哪个版本。
+
+注：1.操作前必须保证git status为空，否则所做操作不会被保存！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+	2.可以恢复到某个分支内commit处的状态，即使该分支已经被删除，但分支信息会显示为当前分支。（工作区内容恢复，分支信息无法恢复）
+
+--------------------管理修改--------------------
 git管理的不是文件，而是修改，每次commit只会提交最近一次git add的修改
 第一次修改 -> git add -> 第二次修改 -> git add -> git commit
 
-----撤销修改----
+--------------------撤销修改--------------------
 git checkout -- myfile.txt		将工作区文件恢复到最近一次git commit或git add时的状态
 git reset HEAD .				撤销最近一次add至暂存区，但还未commit的内容（清空缓存区，不修改工作区和分支）
-
-git reset --hard 版本号			工作区回退到指定版本号
-注：1.操作前必须保证git status为空，否则所做操作不会被保存！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-	2.可以恢复到某个分支内commit处的状态，即使该分支已经被删除，但分支信息会显示为当前分支。（工作区内容恢复，分支信息无法恢复）
 
 对于文件 myfile.txt
 ① 修改后 未add（添加到暂存区） 需要撤销修改时：
@@ -57,7 +64,7 @@ git reset --hard 版本号			工作区回退到指定版本号
 ④ 修改后 add并commit了，需要撤销修改时：
         git reset --hard HEAD^  (版本回退)**
 		
-----删除文件----
+--------------------删除文件--------------------
 将工作区文件删除后，更新版本库
 git rm test.txt		（注：经测试，使用 git add . 也可实现此功能）
 git commit -m "remove test.txt"
@@ -72,7 +79,7 @@ git checkout -- test.txt
 将工作区文件删除，并add和commit后，试图恢复
 git reset --hard HEAD^  (版本回退)
 
-----关联远程仓库 github 本地仓库更新至远端----
+--------------------关联远程仓库 github 本地仓库更新至远端--------------------
 注册github
 git remote add origin git@github.com:lixiangyu0506/learngit.git   	要关联一个远程库
 git push -u origin master                                         	关联后，第一次推送master分支的所有内容；
@@ -82,7 +89,7 @@ git remote -v														查看远程权限
 注：1.首次登陆，ssh协议输入yes
 	2.http协议，git remote add origin https://github.com/lixiangyu0506/learngit.git，但每次需要输入注册用户名和密码。
 	
-----克隆远程仓库 远程仓库内容更新至本地----
+--------------------克隆远程仓库 远程仓库内容更新至本地--------------------
 git clone git@github.com:lixiangyu0506/learngit.git		克隆一个远程仓库
 
 git fetch origin master							从远程的origin仓库的master主分支更新最新的版本到origin/master分支上
@@ -94,7 +101,7 @@ git pull origin master							相当于git fetch 和 git merge，即更新远程�
 注：1.建议使用fetch，pull操作可能有危险
 	2.merge操作见下面分支合并
 
-----创建与合并分支----
+--------------------创建与合并分支--------------------
 HEAD指向当前分支，当前分支指向最新提交
 git branch					查看分支，并在当前分支前标"*"
 git branch <name>			创建分支
@@ -105,7 +112,7 @@ git merge <name>			合并某分支到当前分支
 注：1.在哪儿commit，最新更改就保存在哪个分支，commit前所有分支可见最新更改，commit后只有此分支能看见最新更改
 	2.如果checkout时存在冲突，切换失败并给出相关提示
 
-----分支冲突----
+--------------------分支冲突--------------------
 1.创建分支feature，修改文件，add和commit
 2.切换至master分支，修改同一文件，add和commit
 3.使用merge合并，会提示合并失败
@@ -126,7 +133,7 @@ git log --graph --pretty=oneline --abbrev-commit		查看分支合并图
 1.合并前，master和dev分支都对文件进行过修改，分支冲突，手动修改
 2.合并前，仅有一方对文件进行修改（新建、删除、内容更改），则按照修改的一方进行合并
 
-----分支管理策略----
+--------------------分支管理策略--------------------
 合并分支时，如果可能，Git会用Fast forward模式，但这种模式下，主分支在合并前和合并后是同一个版本号，合并前那个版本会被覆盖。
 git merge -ff dev									快速合并，--graph能看不出合并操作（默认）
 git merge --no-ff -m "merge with no-ff" dev			禁用快速合并模式，为合并操作添加commit，--graph能看出合并操作，合并前的版本不会被覆盖
@@ -137,7 +144,7 @@ git merge --no-ff -m "merge with no-ff" dev			禁用快速合并模式，为合�
 那在哪干活呢？干活都在dev分支上，也就是说，dev分支是不稳定的，到某个时候，比如1.0版本发布时，再把dev分支合并到master上，在master分支发布1.0版本；
 你和你的小伙伴们每个人都在dev分支上干活，每个人都有自己的分支（devLxy,devJxj等），时不时地往dev分支上合并就可以了。
 
-----临时分支（贮藏功能）----
+--------------------临时分支（贮藏功能）--------------------
 有两个分支，master和dev，dev编辑到一半，并未成功，所以不能提交。
 但此时master有一个bug需要马上去修复，但因为dev无法提交，所以用git stash保存现场。
 转去master，创建新分支修复bug，然后转回master并merge。
@@ -149,6 +156,7 @@ git stash pop				恢复最近一次工作现场，并从list列表中删除
 git stash apply stash@{0}   根据list列表恢复工作现场，但不从list列表中删除
 git stash drop stash@{0}	删除list列表中的工作现场
 
-----功能分支----
+--------------------功能分支--------------------
 开发一个新功能，最好新建一个分支
 git branch -D <name>		强行删除一个没有被合并过的分支
+
