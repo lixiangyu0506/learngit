@@ -39,6 +39,10 @@ git管理的不是文件，而是修改，每次commit只会提交最近一次gi
 git checkout -- myfile.txt		将工作区文件恢复到最近一次git commit或git add时的状态
 git reset HEAD .				撤销最近一次add至暂存区，但还未commit的内容（清空缓存区，不修改工作区和分支）
 
+git reset --hard 版本号			工作区回退到指定版本号
+注：1.操作前必须保证git status为空，否则所做操作不会被保存！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+	2.可以恢复到某个分支内commit处的状态，即使该分支已经被删除，但分支信息会显示为当前分支。（工作区内容恢复，分支信息无法恢复）
+
 对于文件 myfile.txt
 ① 修改后 未add（添加到暂存区） 需要撤销修改时：
         git checkout -- myfile.txt 或 手动删除工作区修改
@@ -118,10 +122,14 @@ git log --graph --pretty=oneline --abbrev-commit		查看分支合并图
 
 注：合并过程中，分支显示 (当前分支|MERGING)
 
+分支合并原则（dev向master合并）：
+1.合并前，master和dev分支都对文件进行过修改，分支冲突，手动修改
+2.合并前，仅有一方对文件进行修改（新建、删除、内容更改），则按照修改的一方进行合并
+
 ----分支管理策略----
-合并分支时，如果可能，Git会用Fast forward模式，但这种模式下，删除分支后，会丢掉分支信息。
+合并分支时，如果可能，Git会用Fast forward模式，但这种模式下，主分支在合并前和合并后是同一个版本号，合并前那个版本会被覆盖。
 git merge -ff dev									快速合并，--graph能看不出合并操作（默认）
-git merge --no-ff -m "merge with no-ff" dev			禁用快速合并模式，为合并操作添加commit，--graph能看出合并操作
+git merge --no-ff -m "merge with no-ff" dev			禁用快速合并模式，为合并操作添加commit，--graph能看出合并操作，合并前的版本不会被覆盖
 
 分支策略
 在实际开发中，我们应该按照几个基本原则进行分支管理：
@@ -140,3 +148,7 @@ git stash list				查看贮藏的工作现场列表
 git stash pop				恢复最近一次工作现场，并从list列表中删除
 git stash apply stash@{0}   根据list列表恢复工作现场，但不从list列表中删除
 git stash drop stash@{0}	删除list列表中的工作现场
+
+----功能分支----
+开发一个新功能，最好新建一个分支
+git branch -D <name>		强行删除一个没有被合并过的分支
