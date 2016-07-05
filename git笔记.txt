@@ -64,6 +64,41 @@ git reset HEAD .				撤销最近一次add至暂存区，但还未commit的内容
 ④ 修改后 add并commit了，需要撤销修改时：
         git reset --hard HEAD^  (版本回退)**
 		
+--------------------git revert VS git reset--------------------
+git revert：回退某次提交，并重新提交，相当于代码恢复修改前，但是服务器上有两次提交log；
+git reset：	回退某次提交，同时回退修改log。
+
+假设当前有3个commit，git log 如下：
+commit3:  add test3.c
+commit2:  add test2.c
+commit1:  add test1.c
+
+执行 git revert HEAD~1之后，会提示提交信息，提交后git  log如下：
+commit4:  Reverts “test2.c”
+commit3:  test3.c
+commit2:  test2.c
+commit1:  test1.c
+执行完后，test2.c被删除了，运行git status，无任何变化
+
+执行 git reset HEAD~1之后，git log 如下：
+commit2:  test2.c
+commit1:  test1.c
+执行完后，commit3被删除了；但是test3.c还在本地工作区，运行git status，可以看见提示test3.c可以用git add包含该文件（回退版本库）
+
+执行git reset --hard HEAD~1，git log 如下：
+commit2:  test2.c
+commit1:  test1.c
+执行完后，commit3被删除了；test3.c也被删除了，查看git status，无任何变化（回退工作区 & 版本库）
+
+git revert 版本号 					撤销此次提交的修改，在此之前和之后提交的更改都不发生变化，然后生成一个新的版本号
+git revert -n 版本号				与上述功能相同，不过不会自动弹出commit信息，可采用 git revert --continue 继续提交，git revert --abort 撤销此次操作
+git revert -n 版本号A..版本号B		版本号A提交时间先于版本号B，撤销 版本号A+1~版本号2 之间的所有更改
+git revert -n 版本号A..				撤销 版本号A+1 及其以后所有的操作
+
+注：1.revert 在之前版本号的前提上继续添加版本号，而不是回退，可避免远程同步时的冲突
+	2.revert 前 git status，最好确保状态为空
+	3.常用 git status，撤销有问题不要慌，查看状态，会提供解决方案
+		
 --------------------删除文件--------------------
 将工作区文件删除后，更新版本库
 git rm test.txt		（注：经测试，使用 git add . 也可实现此功能）
