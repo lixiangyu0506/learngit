@@ -32,7 +32,7 @@ commit：是最后的阶段，只有commit了，我们的代码才真正进入�
 git diff					查看working tree与index file的差别
 git diff --cached			查看index file与commit的差别
 git diff 版本号				查看working tree和commit的差别（最近的一次版本号，可使用HEAD）
-git diff 版本号1 版本号2	两个版本间差异，将版本号1转变成版本号2需要做什么
+git diff 版本号1 版本号2	两个版本间差异，版本号1-->版本号2 需要做什么
 
 --------------------版本回退（reset）--------------------
 git reset --hard 版本号			工作区回退到指定版本号
@@ -229,12 +229,13 @@ git branch -d back1
 --------------------标签管理--------------------
 git tag v1.0 [版本号]					向指定的版本打标签，不写版本号默认为HEAD
 git tag									查看已存在标签（所有分支，按字母排序）
-git tag -a 标签 -m "说明" [版本号]		-a指定标签名(v1.0)，-m指定说明文字
-git show 标签							查看标签信息：commit信息，标签说明信息，与前一版本间的diff信息
-git push origin 标签					推送一个本地标签
+git tag -a v1.0 -m "说明" [版本号]		-a指定标签名(v1.0)，-m指定说明文字
+git show v1.0							查看标签信息：commit信息，标签说明信息，与前一版本间的diff信息
+git push origin v1.0					推送一个本地标签
 git push origin --tags					推送全部未推送过的本地标签
-git tag -d 标签							删除一个本地标签
-git push origin :refs/tags/标签			删除一个远程标签（需要先删除本地标签，注意空格）
+git tag -d v1.0							删除一个本地标签
+git push origin --delete tag v1.0		删除一个远程标签（不需要删除本地标签）
+git ls-remote --tags origin				查看所有远程标签
 
 说明：
 1.所有分支中的标签名称都不能重复，否则报错
