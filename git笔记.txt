@@ -248,3 +248,106 @@ git ls-remote --tags origin				查看所有远程标签
 可以推送pull request给官方仓库来贡献代码。
 
 注：Fork和pull request均为GitHub界面上方的按钮
+
+--------------------忽略特殊文件(.gitignore)--------------------
+在仓库工作目录（非.git目录）下新建一个名为.gitignore的文件，用于忽略不想被提交的文件
+
+忽略规则：
+#					注释
+*.[oa]				忽略*.o和*.a文件
+
+*.[bB]				忽略*.b和*.B文件，my.b除外
+!my.b
+
+dbg					忽略dbg文件和dbg目录（注：只忽略dbg文件，不忽略dbg.txt文件，也不忽略dbg1文件，需要完全匹配）
+dbg/				只忽略dbg目录，不忽略dbg文件
+注意：1.只忽略 dbg 文件，不忽略 dbg.txt 文件，也不忽略 dbg1 文件
+	  2.只忽略 dbg/ 文件夹，不忽略 dbg1/ 文件夹
+	  3.会忽略 abc/dbg 文件，会忽略 abc/dbg/ 文件夹（下面的 /dbg 不会忽略此项）
+
+dbg					只忽略dbg文件，不忽略dbg目录
+!dbg/
+
+/dbg				只忽略当前目录下的dbg文件和目录，子目录的dbg不在忽略范围内
+
+?					代表任意的一个字符
+＊					代表任意数目的字符
+{!ab}				必须不是此类型
+{ab,bb,cx}			代表ab,bb,cx中任一类型即可
+[abc]				代表a,b,c中任一字符即可
+[^abc]				代表必须不是a,b,c中任一字符
+
+由于git不会加入空目录，所以下面做法会导致tmp目录不会存在 tmp/* （注：手动新建目录，在目录为空的情况下，即使没被忽略，也不会被提交）
+若想保留空目录，可在tmp目录下加一个.gitignore，内容为
+*
+!.gitignore
+
+如果文件已经被跟踪了，再加入gitignore是无效的，所以需要删除下缓存
+git rm -r --cached ignore_file	（注 -r 为递归删除，如果只想忽略本目录下的文件，不包括子目录，则去掉 “-r”）
+
+常用配置信息
+# Windows:
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python:
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# My configurations:
+db.ini
+*.user
+
+注：1.Windows系统下，如果你在资源管理器里新建一个.gitignore文件，它会非常弱智地提示你必须输入文件名，但是在文本编辑器里“保存”或者“另存为”就可以把文件保存为.gitignore了
+	2. .gitignore文件也会添加入版本库，可进行版本管理
+	3. .gitignore文件对其所在的目录及其全部子目录均有效
+	4.通过将.gitignore文件添加到远程仓库，其他开发者更新该文件到本地仓库，以共享同一套忽略规则
+
+--------------------忽略特殊文件(本地忽略)--------------------
+.gitignore文件添加到远程仓库，以共享同一套忽略规则，但如果你不想把它添加到版本库，想本地排除一些文件，可采用如下方法
+
+本地全局忽略
+1. 在本机的任意位置建立一个忽略规则配置文件
+2. git config --global core.excludesfile  文件的绝对路径
+
+单个仓库忽略
+.git/info/exclude	将忽略规则添加至仓库内的此文件中
+
+如果文件已被跟踪，想忽略/恢复跟踪
+git update-index --assume-unchanged 文件（包括路径）       	#忽略跟踪
+git update-index --no-assume-unchanged 文件（包括路径） 	#恢复跟踪
+注：绝对/相对路径均可，经测试，仅对文件好使，不管文件是否已被配置文件忽略。文件夹测试失败。（慎用，前几种方式足够了）
+
+--------------------配置别名--------------------
+给常用指令（或指令串）起一个更简洁的名称
+
+git config --global alias.别名 "指令（串）"
+
+例如：
+git config --global alias.st status
+git st		#等同于 git status
+
+常用别名：
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.ci commit
+git config --global alias.br branch
+git config --global alias.unstage 'reset HEAD'
+git config --global alias.last 'log -1'
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
+--------------------修改配置文件信息--------------------
+git config [--global] a.b c
+加上--global		对系统当前用户起作用，存放于用户主目录，例如：C:\Users\Administrator\.gitconfig
+不加--global		对当前仓库起作用，存放于.git/config
+
+配置信息存放格式
+[a]
+	b = c
+
+如果想修改配置，可直接去配置文件修改并保存（添加/修改/删除均可）
